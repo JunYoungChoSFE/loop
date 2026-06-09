@@ -22,6 +22,7 @@ Most loyalty apps lock core features behind expensive higher tiers, charge you m
 - **Zero-code widget.** Looks clean and matches your brand colors without any custom CSS. We never force shoppers into a separate popup portal.
 - **Zero dark patterns.** No forced star ratings, no in-app upsells. When you uninstall, we completely remove the code and data we injected.
 - **A complete core.** Points on purchase, points-to-discount-code redemption, referrals (rewards for both sides), and basic email notifications.
+- **Built-in repurchase insights.** Loop quietly estimates when each customer is likely to reorder and who's drifting away — and can act on it (a gentle reminder, bonus points, or an alert to you). Every automatic action is **off by default** and opt-in. No extra app, no separate analytics subscription.
 
 The simplicity and honesty that larger companies structurally can't offer — that's the gap Loop fills.
 
@@ -33,6 +34,7 @@ The simplicity and honesty that larger companies structurally can't offer — th
 - Referral links — rewards for both the referrer and the referred customer
 - Polaris admin: dashboard, members, referral status, and settings
 - Transactional emails for earning and rewards (on/off)
+- Repurchase & churn predictions with opt-in automatic actions (reminder / bonus points / merchant alert)
 - Clean uninstall + GDPR compliance
 
 ## Pricing
@@ -44,15 +46,20 @@ The simplicity and honesty that larger companies structurally can't offer — th
 
 ---
 
-## Screenshot shot-list (5 recommended)
+## Screenshot shot-list (6 recommended)
 
 1. **Dashboard** — member count, points issued, recent earning activity
 2. **Settings screen** — earn rate, rewards, widget colors (highlights the 5-minute setup)
 3. **Storefront widget** — launcher + rewards panel (reflecting brand colors)
-4. **Members list** — search and points adjustment
-5. **Referral status** or **Plan screen** (the honest single price)
+4. **Predictions** — "repurchase imminent / churn risk" summary + customer lists + opt-in toggles
+5. **Members list** — search and points adjustment
+6. **Referral status** or **Plan screen** (the honest single price)
 
-> Demo data: run `node scripts/seed-demo.mjs` to populate members before shooting, so the screens don't look empty.
+> Demo data: run `node scripts/seed-demo.mjs` before shooting. It now seeds members
+> with dated purchase histories, so the Predictions screen shows real imminent / at-risk
+> customers (otherwise that screen is empty). Remove with `node scripts/seed-demo.mjs --clean`.
+> Note: the probabilistic Alive% / Est. value columns (BG/NBD) only populate at 200+ active
+> customers; with demo data the basis shows "Personalized" and those columns show "—" (expected).
 
 ## Submission asset checklist
 
