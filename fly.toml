@@ -1,0 +1,33 @@
+# Fly.io config for the Loop app. `fly launch` detects this + the Dockerfile.
+# Change `app` to a globally-unique name if "loop-loyalty" is taken.
+app = "loop-loyalty"
+primary_region = "nrt"  # Tokyo — closest Fly region to Korea
+
+[http_service]
+  processes = ["app"]
+  internal_port = 3000
+  force_https = true
+  # Keep the machine always on so order/customer/GDPR webhooks are never dropped.
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+[mounts]
+  source = "data"
+  destination="/data"
+  auto_extend_size_threshold = 80
+  auto_extend_size_increment = "1GB"
+  auto_extend_size_limit = "10GB"
+
+[processes]
+  app = "node ./dbsetup.js npm run docker-start"
+
+[env]
+  PORT = 3000
+  SHOPIFY_APP_URL = "https://loop-loyalty.fly.dev"
+  SHOPIFY_API_KEY = "68ceeb5eea1df2310f9628a7556b7463"
+  SCOPES = "read_customers,read_orders,write_customers,write_discounts,write_orders"

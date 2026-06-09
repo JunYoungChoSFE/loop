@@ -1,0 +1,70 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "68ceeb5eea1df2310f9628a7556b7463"
+application_url = "https://loop-loyalty.fly.dev"
+embedded = true
+name = "loop"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+# Loop loyalty app minimal permissions:
+#   read_orders/write_orders   - earn points via the orders/create webhook
+#   read_customers/write_customers - link members to Shopify customers
+#   write_discounts            - issue single-use discount codes on redemption
+# The widget is a Theme App Extension, so no separate theme/script scope is needed (guardrail 4, least privilege).
+scopes = "read_orders,write_orders,read_customers,write_customers,write_discounts"
+
+[webhooks]
+api_version = "2026-07"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = [ "app/uninstalled" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
+
+  # Billing: sync plan (free/pro) when subscription status changes (Phase 7)
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/subscriptions_update"
+  topics = [ "app_subscriptions/update" ]
+
+  # GDPR mandatory compliance trio — branched in a single handler (Phase 8, App Store approval requirement)
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/compliance"
+  compliance_topics = [
+    "customers/data_request",
+    "customers/redact",
+    "shop/redact",
+  ]
+
+  # Earning: credit points on order creation (Phase 1). Enabled after PCD approval.
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/orders/create"
+  topics = [ "orders/create" ]
+
+  # Signup bonus: credit on customer creation (PCD topic). Enabled after PCD approval.
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/create"
+  topics = [ "customers/create" ]
+
+[auth]
+redirect_urls = [
+  "https://loop-loyalty.fly.dev/auth/callback",
+  "https://loop-loyalty.fly.dev/auth/shopify/callback",
+  "https://loop-loyalty.fly.dev/api/auth/callback"
+]
+
+# App Proxy for the storefront widget.
+# Storefront /apps/loop/* → strip prefix+subpath → forward to the app's /proxy/* routes.
+#   /apps/loop/state  → proxy.state.tsx
+#   /apps/loop/redeem → proxy.redeem.tsx
+# The url is automatically updated to the tunnel address by `shopify app dev` (automatically_update_urls_on_dev).
+[app_proxy]
+url = "https://loop-loyalty.fly.dev/proxy"
+prefix = "apps"
+subpath = "loop"
+
+[build]
+automatically_update_urls_on_dev = true

@@ -1,0 +1,21 @@
+{% comment %}
+  Loop loyalty widget — App embed block.
+  Turn it on under Theme editor > App embeds to show an inline launcher + panel on every page.
+  Color/position are fetched from the app settings via the App Proxy (/apps/loop/state) — single source.
+{% endcomment %}
+<div id="loop-loyalty-root" data-loop-proxy="/apps/loop"></div>
+
+{% schema %}
+{
+  "name": "Loop loyalty",
+  "target": "body",
+  "javascript": "loyalty.js",
+  "stylesheet": "loyalty.css",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "Loop points & rewards widget. Color and position are controlled from the Loop app settings and apply automatically."
+    }
+  ]
+}
+{% endschema %}

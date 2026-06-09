@@ -1,0 +1,139 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
+// enough when changing adapters.
+// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Loop 로열티 도메인 모델 (CLAUDE.md 4절)
+// 멀티테넌시: 모든 모델은 shopId로 분리. 쿼리에 항상 shopId 스코프를 건다.
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// 가맹점. 한 Shopify 스토어 = 한 Shop.
+model Shop {
+  id         String   @id @default(cuid())
+  shopDomain String   @unique // xxx.myshopify.com
+  plan       String   @default("free") // free | pro
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  setting      Setting?
+  members      Member[]
+  transactions PointsTransaction[]
+  rewards      Reward[]
+  referrals    Referral[]
+}
+
+/// 가맹점별 설정 (적립률, 위젯, 추천 보상). 적립 엔진이 참조.
+model Setting {
+  id             String   @id @default(cuid())
+  shopId         String   @unique
+  shop           Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  earnRate       Float    @default(1) // 통화 1단위당 적립 포인트 (예: $1 = 1pt)
+  signupBonus    Int      @default(0) // 계정 생성 보너스 포인트
+  referralReward Int      @default(0) // 추천 성공 시 양쪽에 지급할 포인트
+  widgetColor    String   @default("#000000")
+  widgetPosition String   @default("bottom-right")
+  emailsEnabled  Boolean  @default(true) // 트랜잭션 알림 이메일 on/off (Phase 6)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+/// 로열티 고객. Shopify 고객과 연결.
+model Member {
+  id                String   @id @default(cuid())
+  shopId            String
+  shop              Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopifyCustomerId String?
+  email             String?
+  pointsBalance     Int      @default(0)
+  referralCode      String?  @unique // Phase 5에서 채움
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  transactions  PointsTransaction[]
+  referralsMade Referral[]          @relation("referrer")
+  referralsGot  Referral[]          @relation("referee")
+
+  @@unique([shopId, shopifyCustomerId])
+  @@index([shopId])
+}
+
+/// 적립/차감 이력. delta(+적립 / -차감).
+model PointsTransaction {
+  id        String   @id @default(cuid())
+  shopId    String
+  shop      Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  delta     Int // + 적립, - 차감
+  reason    String // purchase | signup | redeem | referral | adjust
+  orderId   String? // 적립 멱등성: 주문당 1회
+  createdAt DateTime @default(now())
+
+  @@unique([shopId, orderId]) // 같은 주문 중복 적립 방지 (orderId null은 다수 허용)
+  @@index([shopId])
+  @@index([memberId])
+}
+
+/// 교환 가능한 리워드.
+model Reward {
+  id         String   @id @default(cuid())
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  title      String
+  pointsCost Int
+  type       String // fixed | percentage | free_shipping
+  value      Float    @default(0) // fixed=금액, percentage=퍼센트
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([shopId])
+}
+
+/// 추천. 추천인↔피추천인, 보상 지급 여부.
+model Referral {
+  id               String   @id @default(cuid())
+  shopId           String
+  shop             Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  referrerMemberId String
+  referrer         Member   @relation("referrer", fields: [referrerMemberId], references: [id], onDelete: Cascade)
+  refereeMemberId  String?
+  referee          Member?  @relation("referee", fields: [refereeMemberId], references: [id], onDelete: SetNull)
+  status           String   @default("pending") // pending | completed
+  rewarded         Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([shopId])
+}
