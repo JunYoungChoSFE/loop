@@ -85,13 +85,13 @@ export function highValueAlertEmail(i: {
   const clv =
     i.predictedClv != null ? ` (est. value ~${i.predictedClv.toFixed(0)})` : "";
   return {
-    subject: `Loop: a high-value customer is at risk of churning`,
+    subject: `Roost: a high-value customer is at risk of churning`,
     text:
       `Heads up,\n\n` +
       `One of your best customers, ${i.customer}${clv}, hasn't ordered in a while ` +
-      `and Loop predicts they're at risk of churning.\n\n` +
+      `and Roost predicts they're at risk of churning.\n\n` +
       `Consider reaching out with a personal offer. You can see the full at-risk ` +
-      `list in Loop → Predictions.\n\n` +
-      `— Loop`,
+      `list in Roost → Predictions.\n\n` +
+      `— Roost`,
   };
 }

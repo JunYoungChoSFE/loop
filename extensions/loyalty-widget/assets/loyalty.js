@@ -92,7 +92,7 @@
 
     parts.push('<div class="loop-result" hidden></div>');
     parts.push('</div>');
-    parts.push('<div class="loop-panel__foot">Powered by Loop</div>');
+    parts.push('<div class="loop-panel__foot">Powered by Roost</div>');
     panel.innerHTML = parts.join("");
 
     panel.querySelector(".loop-close").addEventListener("click", function () {

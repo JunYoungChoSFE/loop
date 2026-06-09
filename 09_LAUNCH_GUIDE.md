@@ -11,7 +11,7 @@
 진짜 fly 서버에서 적립 웹훅까지 도는지 한 번 확인한다.
 
 ### 1-A. 리워드 추가 (위젯·교환 테스트용)
-1. 개발 스토어 어드민 → **Loop 앱** 열기 (이제 fly에서 로딩됨)
+1. 개발 스토어 어드민 → **Roost 앱** 열기 (이제 fly에서 로딩됨)
 2. **Settings → Rewards** → 추가:
    - Reward name: `$5 off`
    - Points cost: `500`
@@ -44,7 +44,7 @@ App Store 리스팅에 **Privacy policy URL**(공개 접근 가능한 주소)이
 
 ### 방법 A — GitHub Gist (가장 빠름, GitHub 계정 필요)
 1. github.com 로그인 → 우상단 **+** → **New gist**
-2. 파일명 `loop-privacy-policy.md`, 내용에 `08_PRIVACY_POLICY_EN.md` 본문(`## Loop Privacy Policy`부터) 붙여넣기
+2. 파일명 `loop-privacy-policy.md`, 내용에 `08_PRIVACY_POLICY_EN.md` 본문(`## Roost Privacy Policy`부터) 붙여넣기
 3. **Create public gist** → 생성된 URL이 공개 주소 (마크다운 렌더됨)
 
 ### 방법 B — Notion (계정 있으면 더 보기 좋음)
@@ -88,7 +88,7 @@ App Store는 스크린샷 **최소 3장**(권장 5장)을 요구한다. 권장 �
 **Dev Dashboard (`dev.shopify.com/dashboard`) → loop 앱 → Distribution / App Store listing** 영역에서 리스팅을 작성하고 제출한다. (메뉴명이 다르면 "listing" / "Submit for review" 키워드를 찾는다.)
 
 ### 채울 항목 (초안은 `06_APP_STORE_LISTING.md`에 영어로 준비됨)
-- **App name**: Loop — Honest Loyalty & Rewards
+- **App name**: Roost — Honest Loyalty & Rewards
 - **App icon**: 1200×1200 PNG (별도 제작 필요 — 단순한 로고)
 - **Tagline / subtitle**: `06`의 태그라인
 - **Detailed description**: `06`의 상세 소개 + 기능 불릿

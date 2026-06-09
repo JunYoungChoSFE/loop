@@ -1,4 +1,4 @@
-# CLAUDE.md — Loop (소상인용 Shopify 로열티 앱)
+# CLAUDE.md — Roost (소상인용 Shopify 로열티 앱)
 
 > **Claude Code는 매 세션 시작 시 이 파일을 먼저 읽는다.** 새 작업 전 항상 이 문서를 참조하고, 여기 적힌 가드레일을 절대 어기지 않는다.
 
@@ -124,7 +124,7 @@ shopify.app.toml            # 앱 설정 (scopes, webhooks)
 
 ---
 
-## 10. Loop v2 — 재구매·이탈 예측 (PREDICTION_SPEC 병합)
+## 10. Roost v2 — 재구매·이탈 예측 (PREDICTION_SPEC 병합)
 
 상세 기획은 `03_예측기능_기획서_PREDICTION_SPEC.md`. 아래는 코드 작업 시 지켜야 할 핵심만.
 

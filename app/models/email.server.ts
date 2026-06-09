@@ -14,7 +14,7 @@ export async function deliver(to: string, subject: string, text: string) {
     console.log(`[email:dev] to=${to} subject="${subject}" (provider not configured — not sent)`);
     return;
   }
-  const from = process.env.EMAIL_FROM || "Loop <onboarding@resend.dev>";
+  const from = process.env.EMAIL_FROM || "Roost <onboarding@resend.dev>";
   try {
     await fetch("https://api.resend.com/emails", {
       method: "POST",

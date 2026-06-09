@@ -73,7 +73,7 @@ export default function Dashboard() {
     useLoaderData<typeof loader>();
 
   return (
-    <s-page heading="Loop dashboard">
+    <s-page heading="Roost dashboard">
       <s-button slot="primary-action" href="/app/settings" variant="primary">
         Settings
       </s-button>

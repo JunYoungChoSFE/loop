@@ -135,7 +135,7 @@ export default function Predictions() {
 
       <s-section heading="Automatic actions">
         <s-paragraph>
-          All off by default. Loop only acts with your consent, and every nudge
+          All off by default. Roost only acts with your consent, and every nudge
           carries real value — no fake urgency, no fake scarcity.
         </s-paragraph>
         <Form method="post">
@@ -193,7 +193,7 @@ export default function Predictions() {
 
       <s-section slot="aside" heading="How this works">
         <s-paragraph>
-          Loop estimates each customer's next order from their own purchase
+          Roost estimates each customer's next order from their own purchase
           rhythm. New shops start from category baselines; once a customer has a
           couple of orders the estimate personalizes automatically. Predictions
           are a convenience, not a guarantee — the basis column shows the

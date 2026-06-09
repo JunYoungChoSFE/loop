@@ -3,7 +3,7 @@
 client_id = "68ceeb5eea1df2310f9628a7556b7463"
 application_url = "https://loop-loyalty.fly.dev"
 embedded = true
-name = "loop"
+name = "Roost"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes

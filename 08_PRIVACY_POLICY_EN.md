@@ -1,6 +1,6 @@
 # 08 (EN) — Privacy Policy (English, for App Store listing)
 
-> Public-facing privacy policy for the Loop app. Host this at the URL you submit as
+> Public-facing privacy policy for the Roost app. Host this at the URL you submit as
 > "Privacy policy URL" in your App Store listing.
 > ⚠️ This is a starting draft, not legal advice. Have it reviewed before publishing.
 > Values are filled in (operator, email, jurisdiction, sub-processors). Update the operator name to a
@@ -8,16 +8,16 @@
 
 ---
 
-## Loop Privacy Policy
+## Roost Privacy Policy
 
 **Effective date:** June 8, 2026
-**Operator:** Junyoung Cho ("Loop", "we", "us")
+**Operator:** Junyoung Cho ("Roost", "we", "us")
 
-Loop is a loyalty app (points, rewards, and referrals) for small Shopify merchants. This policy explains what personal data Loop processes, why, and how.
+Roost is a loyalty app (points, rewards, and referrals) for small Shopify merchants. This policy explains what personal data Roost processes, why, and how.
 
 ### 1. Our role
 
-The merchant is the **data controller**; Loop acts as a **data processor** on the merchant's behalf. We process customer personal data only as needed to let the merchant run their loyalty program through Loop.
+The merchant is the **data controller**; Roost acts as a **data processor** on the merchant's behalf. We process customer personal data only as needed to let the merchant run their loyalty program through Roost.
 
 ### 2. Data we process (minimal collection)
 

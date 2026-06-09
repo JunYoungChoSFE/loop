@@ -7,7 +7,7 @@
 
 ## App name / tagline
 
-- **Name**: Loop — Honest Loyalty & Rewards
+- **Name**: Roost — Honest Loyalty & Rewards
 - **Tagline (max ~62 chars)**: *Points, rewards & referrals. One flat price. No dark patterns.*
 
 ## One-line intro
@@ -16,15 +16,15 @@ An honest loyalty app for small merchants — 5-minute setup, one flat price, ze
 
 ## Detailed description (draft)
 
-Most loyalty apps lock core features behind expensive higher tiers, charge you more as your orders grow, push you for star ratings, and leave code behind even after you uninstall. Loop is built to do the opposite.
+Most loyalty apps lock core features behind expensive higher tiers, charge you more as your orders grow, push you for star ratings, and leave code behind even after you uninstall. Roost is built to do the opposite.
 
 - **One flat price.** Start free, then Pro is $19/month flat. No order-volume penalties, no paywalls, no hidden costs.
 - **Zero-code widget.** Looks clean and matches your brand colors without any custom CSS. We never force shoppers into a separate popup portal.
 - **Zero dark patterns.** No forced star ratings, no in-app upsells. When you uninstall, we completely remove the code and data we injected.
 - **A complete core.** Points on purchase, points-to-discount-code redemption, referrals (rewards for both sides), and basic email notifications.
-- **Built-in repurchase insights.** Loop quietly estimates when each customer is likely to reorder and who's drifting away — and can act on it (a gentle reminder, bonus points, or an alert to you). Every automatic action is **off by default** and opt-in. No extra app, no separate analytics subscription.
+- **Built-in repurchase insights.** Roost quietly estimates when each customer is likely to reorder and who's drifting away — and can act on it (a gentle reminder, bonus points, or an alert to you). Every automatic action is **off by default** and opt-in. No extra app, no separate analytics subscription.
 
-The simplicity and honesty that larger companies structurally can't offer — that's the gap Loop fills.
+The simplicity and honesty that larger companies structurally can't offer — that's the gap Roost fills.
 
 ## Key features
 
@@ -72,7 +72,7 @@ The simplicity and honesty that larger companies structurally can't offer — th
 
 ## Support email — auto-reply template (draft)
 
-> Hi, and thanks for using Loop. A real person will reply to your message within 24 hours on business days.
+> Hi, and thanks for using Roost. A real person will reply to your message within 24 hours on business days.
 > Feel free to write in about anything — install, earning, redemption, or the widget. (The same fast support applies to every plan — no upgrade required.)
 
 ---
