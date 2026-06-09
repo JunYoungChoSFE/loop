@@ -7,6 +7,11 @@ export interface SettingsPatch {
   widgetColor?: string;
   widgetPosition?: string;
   emailsEnabled?: boolean;
+  // 예측 자동 액션 토글 (Loop v2) — 기본 OFF, 상인 동의 후에만 ON.
+  reminderEnabled?: boolean;
+  winbackEnabled?: boolean;
+  winbackPoints?: number;
+  highvalueAlertEnabled?: boolean;
 }
 
 /**

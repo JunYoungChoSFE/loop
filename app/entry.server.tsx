@@ -5,8 +5,12 @@ import { createReadableStreamFromReadable } from "@react-router/node";
 import { type EntryContext } from "react-router";
 import { isbot } from "isbot";
 import { addDocumentResponseHeaders } from "./shopify.server";
+import { startPredictionScheduler } from "./cron.server";
 
 export const streamTimeout = 5000;
+
+// Arm the nightly prediction batch when the server process starts (Loop v2).
+startPredictionScheduler();
 
 export default async function handleRequest(
   request: Request,

@@ -8,7 +8,7 @@ import {
  * Sends an email — if no provider is configured, logs to dev (no send); if RESEND_API_KEY is set, sends via Resend.
  * Uses only fetch, no external dependencies. Failures are silent (so the store flow isn't blocked).
  */
-async function deliver(to: string, subject: string, text: string) {
+export async function deliver(to: string, subject: string, text: string) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.log(`[email:dev] to=${to} subject="${subject}" (provider not configured — not sent)`);

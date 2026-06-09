@@ -35,7 +35,7 @@ export async function collectCustomerData(
   if (!shop) return null;
   const member = await db.member.findFirst({
     where: { shopId: shop.id, shopifyCustomerId },
-    include: { transactions: true },
+    include: { transactions: true, prediction: true },
   });
   if (!member) return null;
   return {
@@ -46,5 +46,15 @@ export async function collectCustomerData(
       reason: t.reason,
       createdAt: t.createdAt.toISOString(),
     })),
+    // Prediction scores are derived customer data — disclosed on request (deleted on redact via cascade).
+    prediction: member.prediction
+      ? {
+          pAlive: member.prediction.pAlive,
+          expectedNextDate: member.prediction.expectedNextDate?.toISOString() ?? null,
+          predictedClv: member.prediction.predictedClv,
+          riskFlag: member.prediction.riskFlag,
+          source: member.prediction.predictionSource,
+        }
+      : null,
   };
 }

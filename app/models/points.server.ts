@@ -10,8 +10,9 @@ export async function creditPurchasePoints(params: {
   memberId: string;
   points: number;
   orderId: string;
+  amount?: number; // 주문 금액 — Gamma-Gamma CLV 입력으로 보관 (Loop v2)
 }): Promise<"credited" | "duplicate" | "skipped"> {
-  const { shopId, memberId, points, orderId } = params;
+  const { shopId, memberId, points, orderId, amount } = params;
   if (points <= 0) return "skipped";
 
   // Idempotency check #1: if this order was already credited, it's a duplicate.
@@ -23,7 +24,14 @@ export async function creditPurchasePoints(params: {
   try {
     await db.$transaction([
       db.pointsTransaction.create({
-        data: { shopId, memberId, delta: points, reason: "purchase", orderId },
+        data: {
+          shopId,
+          memberId,
+          delta: points,
+          reason: "purchase",
+          orderId,
+          amount: amount != null && Number.isFinite(amount) ? amount : null,
+        },
       }),
       db.member.update({
         where: { id: memberId },
@@ -76,6 +84,32 @@ export async function awardSignupBonus(
   } catch {
     return "duplicate";
   }
+}
+
+/**
+ * Grants win-back bonus points to an at-risk member (Loop v2 prediction action).
+ * Records a PointsTransaction(reason="winback") and increments the balance.
+ * @returns the balance after the grant (unchanged if bonus <= 0).
+ */
+export async function grantWinbackPoints(
+  shopId: string,
+  memberId: string,
+  bonus: number,
+): Promise<number> {
+  const member = await db.member.findFirst({ where: { id: memberId, shopId } });
+  if (!member) throw new Error("Member not found.");
+  if (!Number.isFinite(bonus) || bonus <= 0) return member.pointsBalance;
+
+  const [, updated] = await db.$transaction([
+    db.pointsTransaction.create({
+      data: { shopId, memberId, delta: bonus, reason: "winback" },
+    }),
+    db.member.update({
+      where: { id: memberId },
+      data: { pointsBalance: { increment: bonus } },
+    }),
+  ]);
+  return updated.pointsBalance;
 }
 
 /**

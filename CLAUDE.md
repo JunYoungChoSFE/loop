@@ -121,3 +121,25 @@ shopify.app.toml            # 앱 설정 (scopes, webhooks)
 - 모든 DB 쿼리에 `shopId` 스코프.
 - 비밀값은 환경변수 (`SHOPIFY_API_KEY`, `SHOPIFY_API_SECRET`, `DATABASE_URL` 등). 커밋 금지.
 - 작은 PR 단위로, 각 단계 후 개발 스토어에서 실제 동작 확인.
+
+---
+
+## 10. Loop v2 — 재구매·이탈 예측 (PREDICTION_SPEC 병합)
+
+상세 기획은 `03_예측기능_기획서_PREDICTION_SPEC.md`. 아래는 코드 작업 시 지켜야 할 핵심만.
+
+### 10-1. 가드레일 (예측 스펙 9절 — 절대 규칙, 1절 가드레일의 연장)
+1. **예측을 액션으로 닫는다.** 숫자만 보여주는 화면 금지 — 모든 예측엔 켤 수 있는 액션이 있다.
+2. **다크패턴 0.** 넛지는 실제 가치(포인트·리마인더)만. 가짜 긴박감·거짓 재고 금지.
+3. **자동 액션 기본 OFF.** 상인 명시 동의(`Setting.reminderEnabled`/`winbackEnabled`/`highvalueAlertEnabled`, 전부 default false) 후에만 발송.
+4. **배치 실패가 앱을 멈추지 않는다.** 점수 없으면 graceful degrade — 한 상점 실패가 전체 배치를 막지 않음.
+5. **예측을 과신하지 않는다.** UI에 신뢰도(데이터 근거 = `predictionSource`)를 함께 표시. 1회 구매 고객에 단정 금지.
+6. **개인정보·GDPR.** 예측 점수도 고객 데이터다. `CustomerPrediction`·`PredictionActionLog`는 Member/Shop **cascade**로 묶여 redact·클린 언인스톨 시 자동 삭제.
+
+### 10-2. 구현 메모 (스펙과의 의도적 차이 포함)
+- **데이터 모델**: `CustomerPrediction`(pAlive·expectedNextDate·predictedClv·riskFlag·imminentFlag·predictionSource), `PredictionActionLog`(actionType·triggeredAt·actualNextOrderAt). `PointsTransaction.amount`에 주문 금액 보관(CLV 입력). 전부 shopId 스코프.
+- **엔진은 순수 TS, `app/lib/predict/`**: `rfm.ts`(RFM 집계) · `heuristic.ts`(L0 prior/L1 상점평균/L2 개인주기) · `categoryPriors.ts` · `bgnbd.ts`+`gammagamma.ts`+`special.ts`(L3 BG/NBD·Gamma-Gamma, lngamma·2F1·Nelder-Mead 자체구현). 전부 단위테스트.
+- **P3는 Python 워커가 아니라 TS로 인-앱 구현** — 스펙이 경고한 Node↔Python 분리·SQLite 공유 리스크를 피하려는 의도적 결정. 모델은 동일, 런타임 하나.
+- **서비스/배치**: `app/models/prediction.server.ts`(레이어 선택→upsert, 대시보드 read), `predictionActions.server.ts`(트리거→액션→로그, 쿨다운). 자동 액션은 **DB+이메일만** 사용(오프라인 토큰 불필요). L3는 활성고객 ≥ `L3_MIN_CUSTOMERS`(200)일 때만.
+- **스케줄러**: 별도 cron 인프라 없이 `app/cron.server.ts` 인-프로세스 야간 배치(단일 Fly 머신 전제). `/internal/predict`(POST, `CRON_SECRET` 헤더)로 외부/수동 트리거도 가능. 대시보드 로드 시에도 즉시 재계산(stale 방지).
+- **검증**: `PredictionActionLog.actualNextOrderAt`를 사후 채워(배치 backfill) 적중 추적. 북극성 지표는 예측 정확도가 아니라 액션 켠 상점의 재구매율 상승분.

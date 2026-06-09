@@ -25,9 +25,11 @@ The merchant is the **data controller**; Loop acts as a **data processor** on th
 - Email address
 - Shopify customer ID
 - Points balance and earn/redeem transaction history
+- Order totals and purchase timestamps (used to award points and to estimate repurchase timing)
 - Referral relationships (referrer / referee links)
+- Derived prediction scores (e.g. estimated next-order date, churn-risk flag, lifetime-value estimate) — computed from the purchase history above
 
-> We do **not** collect names, addresses, phone numbers, or payment details — they are unnecessary for running a loyalty program.
+> We do **not** collect names, addresses, phone numbers, or payment/card details — they are unnecessary for running a loyalty program.
 
 **About merchants:**
 - Store domain, access token, and app settings (earn rate, widget color, etc.)
@@ -35,8 +37,9 @@ The merchant is the **data controller**; Loop acts as a **data processor** on th
 ### 3. Purpose and legal basis
 
 - Awarding points on purchases, redeeming points for discount codes, and granting referral rewards
+- Estimating repurchase timing and churn risk to help the merchant retain customers (predictions). Any automatic action based on a prediction (a reminder email, bonus points, or a merchant alert) is **off by default** and runs only when the merchant explicitly enables it.
 - Sending transactional emails about points/rewards (only when the merchant enables them)
-- Legal basis: performance of our service contract with the merchant. We use the data **only for these purposes**.
+- Legal basis: performance of our service contract with the merchant. We use the data **only for these purposes**. Prediction scores are derived data, deleted alongside the customer's other data on redaction/uninstall.
 
 ### 4. Sharing and sale
 
