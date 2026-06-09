@@ -32,7 +32,7 @@ The simplicity and honesty that larger companies structurally can't offer — th
 - Automatic redemption of points into one-time Shopify discount codes
 - Storefront widget (Theme App Extension, inline launcher + panel)
 - Referral links — rewards for both the referrer and the referred customer
-- Polaris admin: dashboard, members, referral status, and settings
+- Polaris admin: dashboard, members, predictions, referral status, and settings
 - Transactional emails for earning and rewards (on/off)
 - Repurchase & churn predictions with opt-in automatic actions (reminder / bonus points / merchant alert)
 - Clean uninstall + GDPR compliance
