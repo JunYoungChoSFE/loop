@@ -1,0 +1,31 @@
+{
+  "name": "Roost (Shopify loyalty app)",
+  // Node 20 LTS — matches package.json engines (>=20.19 <22 || >=22.12).
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  // Install deps + generate Prisma client + create the local SQLite dev DB.
+  // Shopify CLI is a devDependency, so npm install brings it in — no global install needed.
+  "postCreateCommand": "npm install && npx prisma generate && npx prisma migrate deploy",
+  // Shopify CLI's dev tunnel + the app's vite/frontend ports.
+  "forwardPorts": [3000, 8002, 9292],
+  "portsAttributes": {
+    "3000": { "label": "app", "onAutoForward": "notify" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Prisma.prisma",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "GraphQL.vscode-graphql"
+      ]
+    }
+  },
+  // .env is gitignored; restore it from Codespaces secrets or paste it in after the container starts.
+  "remoteEnv": {
+    "SHOPIFY_API_KEY": "${localEnv:SHOPIFY_API_KEY}",
+    "SHOPIFY_API_SECRET": "${localEnv:SHOPIFY_API_SECRET}"
+  }
+}
