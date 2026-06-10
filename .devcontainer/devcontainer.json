@@ -1,7 +1,7 @@
 {
   "name": "Roost (Shopify loyalty app)",
-  // Node 20 LTS — matches package.json engines (>=20.19 <22 || >=22.12).
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:20",
+  // Node 22 — required by @shopify/cli@4.1.0 (>=22.12.0); also satisfies package.json engines.
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
@@ -22,10 +22,8 @@
         "GraphQL.vscode-graphql"
       ]
     }
-  },
-  // .env is gitignored; restore it from Codespaces secrets or paste it in after the container starts.
-  "remoteEnv": {
-    "SHOPIFY_API_KEY": "${localEnv:SHOPIFY_API_KEY}",
-    "SHOPIFY_API_SECRET": "${localEnv:SHOPIFY_API_SECRET}"
   }
+  // No .env needed for core dev: `shopify app dev` injects the Shopify keys after
+  // Partner login. Only optional secrets (RESEND_API_KEY, CRON_SECRET, EMAIL_FROM)
+  // need Codespaces secrets — see SETUP.md.
 }

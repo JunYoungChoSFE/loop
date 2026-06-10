@@ -20,17 +20,20 @@
 1. GitHub repo 페이지 → **Code ▸ Codespaces ▸ Create codespace on main**.
 2. `.devcontainer/devcontainer.json`을 읽어 Node 20 환경이 자동 구성되고,
    `npm install → prisma generate → migrate deploy`까지 자동 실행된다.
-3. **비밀값 주입** — `.env`는 커밋되지 않으므로 둘 중 하나:
-   - (권장) GitHub ▸ Settings ▸ **Codespaces secrets**에 `SHOPIFY_API_KEY`, `SHOPIFY_API_SECRET` 등 등록 → 자동 주입.
-   - 또는 터미널에서 `cp .env.example .env` 후 값 채우기.
-4. 개발 실행:
+3. 개발 실행:
    ```bash
-   npm run dev          # shopify app dev — 터널 자동 생성, dev store 연결
+   npm run dev          # shopify app dev — Partner 로그인 → 키 자동 주입 → 터널 생성
    npm test             # vitest
    npm run typecheck
    ```
-   > `shopify app dev`는 cloudflare 터널을 띄우므로 Codespaces 안에서도 동작한다.
+   > **`.env` 복사 불필요.** `shopify app dev`가 실행 시 Partner 계정 로그인을 띄우고
+   > `SHOPIFY_API_KEY`·`SHOPIFY_API_SECRET`·`SHOPIFY_APP_URL`·`SCOPES`를 자동 주입한다
+   > (toml의 `client_id`로 연결). cloudflare 터널도 자동이라 Codespaces 안에서 동작한다.
    > 포워딩된 포트는 필요 시 **Ports** 탭에서 Public으로 바꾼다.
+4. (선택) **부가 기능 비밀값** — 이메일/cron을 로컬에서 테스트할 때만 필요:
+   - GitHub ▸ Settings ▸ **Codespaces secrets**에 `RESEND_API_KEY`, `EMAIL_FROM`, `CRON_SECRET` 등록, 또는
+   - 터미널에서 `cp .env.example .env` 후 해당 값만 채우기.
+   - 안 쓰면 없어도 `npm run dev`는 정상 동작한다.
 
 ---
 
@@ -39,7 +42,8 @@
 ```bash
 git clone https://github.com/JunYoungChoSFE/loop.git
 cd loop
-cp .env.example .env     # 값 채우기 (PowerShell: copy .env.example .env)
+# .env는 불필요 — shopify app dev가 Partner 로그인 후 키를 주입한다.
+# 이메일/cron 부가 기능을 쓸 때만: cp .env.example .env (PowerShell: copy .env.example .env)
 npm install
 npx prisma generate
 npx prisma migrate deploy
