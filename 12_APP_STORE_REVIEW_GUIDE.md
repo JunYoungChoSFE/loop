@@ -75,7 +75,7 @@ Test account: 별도 자격증명 불필요 — 심사용 개발 스토어에 �
    자동 액션(리마인더/윈백)은 기본 OFF이며 상인이 명시적으로 켜야 발송됩니다.
 6) GDPR/Uninstall: 앱 삭제 시 해당 상점 데이터가 완전히 제거됩니다(흔적 0).
 
-지원 문의: <support@your-domain>
+지원 문의: liger4903@gmail.com
 ```
 
 > 가능하면 심사용 스토어에 `node scripts/seed-demo.mjs <store>` 로 데모 데이터를 채워두면
