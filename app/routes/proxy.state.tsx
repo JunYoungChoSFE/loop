@@ -2,6 +2,7 @@ import type { LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import { ensureShop } from "../models/shop.server";
 import { ensureMember } from "../models/member.server";
+import { fetchCustomerEmail } from "../models/customer.server";
 import { listRewards } from "../models/reward.server";
 
 /**
@@ -10,7 +11,7 @@ import { listRewards } from "../models/reward.server";
  * Returns the current points, redeemable rewards, and widget settings (color/position).
  */
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session } = await authenticate.public.appProxy(request);
+  const { session, admin } = await authenticate.public.appProxy(request);
   if (!session) {
     return Response.json({ ok: false, error: "unauthorized" }, { status: 401 });
   }
@@ -22,9 +23,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     "logged_in_customer_id",
   );
   // Ensure a member for logged-in customers (assigns a referral code) so the widget can share the link right away.
-  const member = customerId
+  let member = customerId
     ? await ensureMember(shop.id, customerId, null)
     : null;
+  // Backfill the email so merchants see a recognizable identity in the Members list,
+  // not a bare numeric customer ID. Only hits the API when the email is still missing.
+  if (member && !member.email && admin) {
+    const email = await fetchCustomerEmail(admin, customerId!);
+    if (email) member = await ensureMember(shop.id, customerId!, email);
+  }
 
   return Response.json({
     ok: true,

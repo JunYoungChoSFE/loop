@@ -10,6 +10,9 @@
 
   var state = null;
   var open = false;
+  // Discount codes redeemed in this session — kept so they survive a panel re-render
+  // (close/reopen) instead of vanishing right after redemption.
+  var issuedCodes = [];
 
   // ── DOM skeleton ───────────────────────────────────────────
   var launcher = el("button", "loop-launcher", { type: "button", "aria-label": "Open loyalty points" });
@@ -90,6 +93,14 @@
         esc(link) + '"><button type="button" class="loop-btn loop-copy">Copy</button></div></div>');
     }
 
+    if (issuedCodes.length) {
+      parts.push('<div class="loop-codes"><div class="loop-codes__head">Your discount codes</div><ul class="loop-codes__list">');
+      issuedCodes.forEach(function (c) {
+        parts.push('<li><code>' + esc(c) + '</code></li>');
+      });
+      parts.push('</ul></div>');
+    }
+
     parts.push('<div class="loop-result" hidden></div>');
     parts.push('</div>');
     parts.push('<div class="loop-panel__foot">Powered by Roost</div>');
@@ -142,7 +153,8 @@
       .then(function (data) {
         if (data && data.ok) {
           state.points -= data.reward.pointsCost;
-          showResult(result, true, "Discount code: " + data.code);
+          // Persist the code so it stays visible across re-renders / panel close-reopen.
+          if (data.code) issuedCodes.push(data.code);
           render();
         } else {
           btn.disabled = false;
