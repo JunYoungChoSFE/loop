@@ -66,14 +66,10 @@ Pro   — $19/mo  — All features, unlimited orders. No hidden costs. Flat pric
 ## 3. 심사관용 테스트 노트 (Test instructions — 그대로 복붙)
 
 ```
-Test store (recommended): we provide a development store with Roost already installed, the
-storefront widget enabled, and demo data seeded — so the Dashboard and Predictions screens
-are populated and nothing needs setup.
-  Store admin: https://loop-yxvyj2nb.myshopify.com/admin
-  Login:       <REVIEWER_EMAIL> / <REVIEWER_PASSWORD>   (fill in before submitting)
-You may also install on your own review store; the flow below is identical. Note that the
-Predictions screen populates from purchase history, so place a few test orders first if you
-use an empty store.
+Test account: No separate credentials needed — install Roost on your review development store
+and the flow below works as-is. The Dashboard and Predictions screens populate from purchase
+history, so create a few test orders (steps 2-3) to see them fill in. Our demo video shows
+these screens fully populated on a store with order history.
 
 1) After install, the Settings screen lets you configure the earn rate and rewards (5-minute setup).
 2) Earning: create/pay for an order that has a customer. The orders/create webhook credits points
