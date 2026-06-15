@@ -21,9 +21,10 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>A short heading about [your app]</h1>
+        <h1 className={styles.heading}>Roost — Honest Loyalty &amp; Rewards</h1>
         <p className={styles.text}>
-          A tagline about [your app] that describes your value proposition.
+          Points, rewards &amp; referrals for small Shopify stores. Five-minute
+          setup, one flat price, zero hidden costs and zero dark patterns.
         </p>
         {showForm && (
           <Form className={styles.form} method="post" action="/auth/login">
@@ -39,16 +40,18 @@ export default function App() {
         )}
         <ul className={styles.list}>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Points &amp; rewards</strong>. Customers earn on every order
+            and redeem points for a single-use discount, right in your
+            storefront — in your brand color, no code.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Built-in referrals</strong>. Reward both the referrer and
+            the referred customer once. No second app needed.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Repurchase &amp; churn predictions</strong>. See who is
+            about to reorder or drift away, with confidence shown. Every
+            automatic action is off by default.
           </li>
         </ul>
       </div>
