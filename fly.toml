@@ -1,4 +1,4 @@
-# Fly.io config for the Loop app. `fly launch` detects this + the Dockerfile.
+# Fly.io config for the Roost app. `fly launch` detects this + the Dockerfile.
 # Change `app` to a globally-unique name if "loop-loyalty" is taken.
 app = "loop-loyalty"
 primary_region = "nrt"  # Tokyo — closest Fly region to Korea

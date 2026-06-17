@@ -9,7 +9,7 @@ import { startPredictionScheduler } from "./cron.server";
 
 export const streamTimeout = 5000;
 
-// Arm the nightly prediction batch when the server process starts (Loop v2).
+// Arm the nightly prediction batch when the server process starts (Roost v2).
 startPredictionScheduler();
 
 export default async function handleRequest(

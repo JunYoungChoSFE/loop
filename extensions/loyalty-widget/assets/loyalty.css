@@ -1,4 +1,4 @@
-/* Loop loyalty widget — zero-code UX (guardrail 4): looks clean with no custom CSS.
+/* Roost loyalty widget — zero-code UX (guardrail 4): looks clean with no custom CSS.
    Brand color comes from --loop-color (injected from app settings); position from [data-position]. */
 .loop-widget {
   --loop-color: #000000;

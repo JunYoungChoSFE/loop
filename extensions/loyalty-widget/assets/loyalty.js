@@ -1,4 +1,4 @@
-/* Loop loyalty widget — zero-dependency vanilla JS.
+/* Roost loyalty widget — zero-dependency vanilla JS.
    Inline launcher + panel. No forced popup portal (guardrail 2).
    State/redeem talk to the App Proxy (/apps/loop). */
 (function () {

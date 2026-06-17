@@ -1,5 +1,5 @@
 /**
- * Secured batch trigger for the prediction engine (Loop v2).
+ * Secured batch trigger for the prediction engine (Roost v2).
  * POST /internal/predict with header `x-cron-secret: $CRON_SECRET`.
  *
  * The in-process scheduler (cron.server.ts) runs this automatically every night;

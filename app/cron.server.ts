@@ -1,5 +1,5 @@
 /**
- * In-process nightly scheduler for the prediction batch (Loop v2).
+ * In-process nightly scheduler for the prediction batch (Roost v2).
  *
  * Why in-process: the app runs as a single always-on Fly machine
  * (min_machines_running = 1, auto_stop = false), so a self-rearming daily timer

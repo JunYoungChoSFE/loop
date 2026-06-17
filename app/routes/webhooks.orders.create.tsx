@@ -66,7 +66,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     memberId: member.id,
     points,
     orderId,
-    amount: orderTotal, // store order value for CLV (Gamma-Gamma) — Loop v2 prediction
+    amount: orderTotal, // store order value for CLV (Gamma-Gamma) — Roost v2 prediction
   });
 
   console.log(`Order ${orderId}: ${points}pt [${result}] → member ${member.id}`);

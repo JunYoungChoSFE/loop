@@ -40,7 +40,7 @@ export function rewardAvailableEmail(i: {
   };
 }
 
-// ── Loop v2 prediction nudges ────────────────────────────────────────────────
+// ── Roost v2 prediction nudges ───────────────────────────────────────────────
 // Honest, low-frequency re-engagement. No fake urgency, no fake scarcity
 // (PREDICTION_SPEC guardrail 2). A nudge must carry real value.
 
