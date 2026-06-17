@@ -5,7 +5,7 @@ import type {
 } from "react-router";
 import { Form, useActionData, useLoaderData } from "react-router";
 import { boundary } from "@shopify/shopify-app-react-router/server";
-import { authenticate, PRO_PLAN } from "../shopify.server";
+import { authenticate, PRO_PLAN, PRO_ANNUAL_PLAN, PRO_PLANS } from "../shopify.server";
 import { ensureShop } from "../models/shop.server";
 import {
   FREE_ORDER_LIMIT,
@@ -20,7 +20,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const shop = await ensureShop(session.shop);
 
   const { hasActivePayment, appSubscriptions } = await billing.check({
-    plans: [PRO_PLAN],
+    plans: PRO_PLANS,
   });
 
   // Sync plan from the subscription state (single source of truth: Shopify Billing).
@@ -28,12 +28,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   if (shop.plan !== plan) await setPlan(shop.id, plan);
 
   const used = await monthlyAccrualCount(shop.id);
+  const active = appSubscriptions?.[0] ?? null;
 
   return {
     plan,
     used,
     limit: FREE_ORDER_LIMIT,
-    subscriptionId: appSubscriptions?.[0]?.id ?? null,
+    subscriptionId: active?.id ?? null,
+    // Which interval the merchant is on, so the badge can read "Pro (annual)".
+    isAnnual: active?.name === PRO_ANNUAL_PLAN,
   };
 };
 
@@ -44,10 +47,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const appUrl = process.env.SHOPIFY_APP_URL || "";
 
   if (intent === "upgrade") {
+    // Merchant picks the interval; same Pro features either way.
+    const plan = form.get("plan") === "annual" ? PRO_ANNUAL_PLAN : PRO_PLAN;
     try {
       // On success this redirects (throws a Response) to the confirmationUrl.
       await billing.request({
-        plan: PRO_PLAN,
+        plan,
         isTest,
         returnUrl: `${appUrl}/app/billing`,
       });
@@ -75,7 +80,8 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 };
 
 export default function Billing() {
-  const { plan, used, limit, subscriptionId } = useLoaderData<typeof loader>();
+  const { plan, used, limit, subscriptionId, isAnnual } =
+    useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const isPro = plan === "pro";
   const overLimit = !isPro && used >= limit;
@@ -92,9 +98,15 @@ export default function Billing() {
         <s-stack direction="block" gap="base">
           <s-stack direction="inline" gap="small" alignItems="center">
             <s-badge tone={isPro ? "success" : "neutral"}>
-              {isPro ? "Pro" : "Free"}
+              {isPro ? (isAnnual ? "Pro (annual)" : "Pro") : "Free"}
             </s-badge>
-            <s-text>{isPro ? "$19/mo · all features, unlimited orders" : "$0 · core features included"}</s-text>
+            <s-text>
+              {isPro
+                ? isAnnual
+                  ? "$190/yr · all features, unlimited orders"
+                  : "$19/mo · all features, unlimited orders"
+                : "$0 · core features included"}
+            </s-text>
           </s-stack>
 
           {!isPro && (
@@ -128,17 +140,26 @@ export default function Billing() {
             </s-stack>
           </Form>
         ) : (
-          <Form method="post">
-            <input type="hidden" name="_action" value="upgrade" />
-            <s-stack direction="block" gap="base">
-              <s-paragraph>
-                $19/month flat. No order-count penalty, no hidden costs.
-              </s-paragraph>
+          <s-stack direction="block" gap="base">
+            <s-paragraph>
+              Flat price. No order-count penalty, no hidden costs. Same features
+              either way — annual is two months off.
+            </s-paragraph>
+            <Form method="post">
+              <input type="hidden" name="_action" value="upgrade" />
+              <input type="hidden" name="plan" value="monthly" />
               <s-button type="submit" variant="primary">
-                Start Pro
+                Start Pro — $19/mo
               </s-button>
-            </s-stack>
-          </Form>
+            </Form>
+            <Form method="post">
+              <input type="hidden" name="_action" value="upgrade" />
+              <input type="hidden" name="plan" value="annual" />
+              <s-button type="submit" variant="secondary">
+                Start Pro — $190/yr (save 17%)
+              </s-button>
+            </Form>
+          </s-stack>
         )}
       </s-section>
     </s-page>
