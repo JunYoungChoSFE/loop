@@ -17,14 +17,25 @@ import {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
   const shop = await ensureShop(session.shop);
+  const isPro = shop.plan === "pro";
 
   // Recompute on load so the merchant always sees fresh predictions (the nightly
   // batch handles automatic actions; this keeps the dashboard never-stale).
   await recomputePredictionsForShop(shop.id);
   const summary = await getPredictionSummary(shop.id);
 
+  // Free plan gets the aggregate outlook — real counts, an honest teaser, no fake
+  // urgency (guardrail 2). The named customer lists and automatic actions are the
+  // Pro value, so strip the lists server-side: they're never shipped to a Free
+  // client. The counts above stay so the merchant sees the value they'd unlock.
+  if (!isPro) {
+    summary.imminent = [];
+    summary.atRisk = [];
+  }
+
   const s = shop.setting!;
   return {
+    isPro,
     summary,
     actions: {
       reminderEnabled: s.reminderEnabled,
@@ -38,6 +49,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { session } = await authenticate.admin(request);
   const shop = await ensureShop(session.shop);
+
+  // Automatic actions are a Pro feature — enforce server-side, not just by hiding
+  // the form, so a direct POST can't enable paid automation on a Free plan.
+  if (shop.plan !== "pro") {
+    return { error: "Automatic actions are part of the Pro plan." };
+  }
+
   const form = await request.formData();
 
   // Checkboxes are omitted when unchecked, so booleans are derived from presence.
@@ -99,14 +117,19 @@ function CustomerTable({
 }
 
 export default function Predictions() {
-  const { summary, actions } = useLoaderData<typeof loader>();
+  const { isPro, summary, actions } = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const nav = useNavigation();
   const saving = nav.state === "submitting";
 
   return (
     <s-page heading="Predictions">
-      {actionData?.ok && <s-banner tone="success" heading={actionData.ok} />}
+      {actionData && "ok" in actionData && actionData.ok && (
+        <s-banner tone="success" heading={actionData.ok} />
+      )}
+      {actionData && "error" in actionData && actionData.error && (
+        <s-banner tone="critical" heading={actionData.error} />
+      )}
 
       <s-section heading="Repurchase outlook">
         <s-grid gridTemplateColumns="1fr 1fr" gap="base">
@@ -133,6 +156,27 @@ export default function Predictions() {
         </s-box>
       </s-section>
 
+      {!isPro && (
+        <s-section heading="See who they are — and act on it">
+          <s-stack direction="block" gap="base">
+            <s-paragraph>
+              Pro unlocks the named customer lists behind these numbers — exactly
+              who's due to reorder and who's drifting away — plus automatic
+              reminders and point-based win-backs that run for you every night.
+              The counts above are real; Pro turns them into action.
+            </s-paragraph>
+            <s-stack direction="inline" gap="base" alignItems="center">
+              <s-button href="/app/billing" variant="primary">
+                See the Pro plan
+              </s-button>
+              <s-text color="subdued">$19/mo flat · cancel anytime</s-text>
+            </s-stack>
+          </s-stack>
+        </s-section>
+      )}
+
+      {isPro && (
+      <>
       <s-section heading="Automatic actions">
         <s-paragraph>
           All off by default. Roost only acts with your consent, and every nudge
@@ -190,6 +234,8 @@ export default function Predictions() {
           <CustomerTable rows={summary.atRisk} showRisk={true} />
         )}
       </s-section>
+      </>
+      )}
 
       <s-section slot="aside" heading="How this works">
         <s-paragraph>

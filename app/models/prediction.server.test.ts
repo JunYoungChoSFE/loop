@@ -120,6 +120,8 @@ describe("prediction service", () => {
 describe("prediction actions", () => {
   it("winback grants bonus points to at-risk members, respecting cooldown", async () => {
     const shop = await ensureShop(TEST_SHOP);
+    // Automatic actions are Pro-gated.
+    await db.shop.update({ where: { id: shop.id }, data: { plan: "pro" } });
     await db.setting.update({
       where: { shopId: shop.id },
       data: { winbackEnabled: true, winbackPoints: 100 },
@@ -147,6 +149,26 @@ describe("prediction actions", () => {
     expect(logs).toHaveLength(1);
   });
 
+  it("automatic actions are Pro-gated (Free shop fires nothing even with toggles on)", async () => {
+    const shop = await ensureShop(TEST_SHOP);
+    // Free plan (default) but toggles left on — e.g. a Pro shop that downgraded.
+    await db.setting.update({
+      where: { shopId: shop.id },
+      data: { winbackEnabled: true, winbackPoints: 100, reminderEnabled: true },
+    });
+    const m = await ensureMember(shop.id, "atrisk", "f@example.com");
+    await purchase(shop.id, m.id, 90, 50, "o1");
+    await purchase(shop.id, m.id, 60, 50, "o2");
+    await recomputePredictionsForShop(shop.id, NOW);
+
+    const res = await runShopActions(shop.id, NOW);
+    expect(res.skippedNoSetting).toBe(true);
+    expect(res.winbacks).toBe(0);
+    expect(res.reminders).toBe(0);
+    const member = await db.member.findUniqueOrThrow({ where: { id: m.id } });
+    expect(member.pointsBalance).toBe(0);
+  });
+
   it("actions are off by default (no consent → nothing fires)", async () => {
     const shop = await ensureShop(TEST_SHOP);
     const m = await ensureMember(shop.id, "atrisk", "d@example.com");
@@ -162,6 +184,7 @@ describe("prediction actions", () => {
 
   it("backfill records the actual next order after a trigger", async () => {
     const shop = await ensureShop(TEST_SHOP);
+    await db.shop.update({ where: { id: shop.id }, data: { plan: "pro" } });
     await db.setting.update({
       where: { shopId: shop.id },
       data: { winbackEnabled: true, winbackPoints: 50 },

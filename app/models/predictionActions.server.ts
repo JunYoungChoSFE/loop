@@ -87,6 +87,14 @@ export async function runShopActions(
     result.skippedNoSetting = true;
     return result;
   }
+  // Automatic actions (reminders, win-backs, high-value alerts) are a Pro
+  // feature. The dashboard already prevents Free shops from enabling the
+  // toggles, but a shop that downgraded keeps its toggles in the DB — enforce
+  // the gate here too so paid automation truly stops on downgrade.
+  if (shop.plan !== "pro") {
+    result.skippedNoSetting = true;
+    return result;
+  }
   const setting = shop.setting;
   const storeName = shop.shopDomain;
 
