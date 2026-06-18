@@ -66,6 +66,9 @@ model Setting {
   widgetColor    String   @default("#000000")
   widgetPosition String   @default("bottom-right")
   emailsEnabled  Boolean  @default(true) // 트랜잭션 알림 이메일 on/off (Phase 6)
+  // 상점 버티컬 (Loop v2, path B). "뭘 파는지" → 콜드스타트 재구매 prior 선택 (categoryPriors.ts).
+  // null이면 DEFAULT_PRIOR_DAYS. 소모품/리필 버티컬일수록 데이터 적어도 예측이 의미 있음.
+  category       String?  // consumables | cosmetics | food | fashion | durables
   // 예측 자동 액션 토글 (Loop v2). 전부 기본 OFF — 상인 명시 동의 후에만 발송 (예측 스펙 가드레일 3).
   reminderEnabled       Boolean @default(false) // 재구매 임박 고객에게 가벼운 리마인더
   winbackEnabled        Boolean @default(false) // 이탈 위험 고객에게 윈백 보너스 포인트 자동 지급

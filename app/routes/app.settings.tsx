@@ -27,6 +27,17 @@ const POSITIONS = [
   { value: "top-left", label: "Top left" },
 ];
 
+// What the store sells → cold-start reorder prediction prior (categoryPriors.ts).
+// Merchant-facing labels; values must match CATEGORY_PRIOR_DAYS keys.
+const CATEGORIES = [
+  { value: "", label: "Not sure / mixed" },
+  { value: "consumables", label: "Supplements, coffee, household refills" },
+  { value: "cosmetics", label: "Skincare & cosmetics" },
+  { value: "food", label: "Food & snacks" },
+  { value: "fashion", label: "Apparel & fashion" },
+  { value: "durables", label: "Electronics & durables" },
+];
+
 function num(form: FormData, key: string, fallback = 0): number {
   const n = Number(form.get(key));
   return Number.isFinite(n) ? n : fallback;
@@ -53,6 +64,11 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     if (form.has("referralReward")) patch.referralReward = Math.max(0, Math.floor(num(form, "referralReward")));
     if (form.has("widgetColor")) patch.widgetColor = String(form.get("widgetColor") || "#000000").trim();
     if (form.has("widgetPosition")) patch.widgetPosition = String(form.get("widgetPosition") || "bottom-right");
+    // Empty select value clears the vertical (back to the default prior).
+    if (form.has("category")) {
+      const c = String(form.get("category") || "");
+      patch.category = c === "" ? null : c;
+    }
     // An unchecked checkbox is omitted from the form, so only decide it when the marker (_emailsForm) is present.
     if (form.has("_emailsForm")) patch.emailsEnabled = form.has("emailsEnabled");
     await updateSettings(shop.id, patch);
@@ -93,6 +109,29 @@ export default function Settings() {
       {actionData && "error" in actionData && actionData.error && (
         <s-banner tone="critical" heading={actionData.error} />
       )}
+
+      <s-section heading="Your store">
+        <Form method="post">
+          <input type="hidden" name="_action" value="saveSettings" />
+          <s-stack direction="block" gap="base">
+            <s-select
+              name="category"
+              label="What do you sell?"
+              value={setting.category ?? ""}
+              details="Helps Roost predict when customers are due to reorder — even before you have much history. Most useful for products people buy on a cycle."
+            >
+              {CATEGORIES.map((c) => (
+                <s-option key={c.value} value={c.value}>
+                  {c.label}
+                </s-option>
+              ))}
+            </s-select>
+            <s-button type="submit" variant="primary" {...(saving ? { loading: true } : {})}>
+              Save
+            </s-button>
+          </s-stack>
+        </Form>
+      </s-section>
 
       <s-section heading="Earning rules">
         <Form method="post">

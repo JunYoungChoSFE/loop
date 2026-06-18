@@ -20,7 +20,7 @@
 import db from "../db.server";
 import { computeRFM, shopAverageCycleDays } from "../lib/predict/rfm";
 import { predictHeuristic, type PredictionSource } from "../lib/predict/heuristic";
-import { DEFAULT_PRIOR_DAYS } from "../lib/predict/categoryPriors";
+import { priorDaysFor } from "../lib/predict/categoryPriors";
 import {
   fitBGNBD,
   probAlive,
@@ -94,6 +94,15 @@ export async function recomputePredictionsForShop(
 ): Promise<RecomputeResult> {
   const purchases = await loadMemberPurchases(shopId);
 
+  // The merchant's declared vertical picks the cold-start reorder prior — so a
+  // consumable/replenishment shop with little history still gets a meaningful
+  // day-one estimate (path B). Unset → DEFAULT_PRIOR_DAYS via priorDaysFor.
+  const setting = await db.setting.findUnique({
+    where: { shopId },
+    select: { category: true },
+  });
+  const priorDays = priorDaysFor(setting?.category);
+
   // RFM per member, keeping only those with at least one purchase.
   const withRfm = purchases
     .map((p) => ({ ...p, rfm: computeRFM(p.events, now) }))
@@ -132,7 +141,7 @@ export async function recomputePredictionsForShop(
     const h = predictHeuristic({
       rfm: p.rfm,
       shopAvgIntervalDays: shopAvg,
-      priorDays: DEFAULT_PRIOR_DAYS,
+      priorDays,
       now,
     });
 

@@ -115,6 +115,30 @@ describe("prediction service", () => {
     expect(summary.imminent[0].email).toBe("im@example.com");
     expect(summary.atRisk[0].email).toBe("rk@example.com");
   });
+
+  it("uses the shop's vertical for the cold-start prior (path B)", async () => {
+    const shop = await ensureShop(TEST_SHOP);
+    // Consumables → 30-day prior (vs the 45-day default).
+    await db.setting.update({
+      where: { shopId: shop.id },
+      data: { category: "consumables" },
+    });
+    const m = await ensureMember(shop.id, "coldstart", "g@example.com");
+    // Single purchase 10 days ago → L0 prior layer (no personal cycle yet).
+    await purchase(shop.id, m.id, 10, 40, "o1");
+
+    await recomputePredictionsForShop(shop.id, NOW);
+
+    const pred = await db.customerPrediction.findUniqueOrThrow({
+      where: { memberId: m.id },
+    });
+    expect(pred.predictionSource).toBe("L0_prior");
+    // Expected next order = last purchase (NOW − 10d) + 30-day consumables prior.
+    const expected = new Date(NOW.getTime() - 10 * DAY + 30 * DAY);
+    expect(pred.expectedNextDate?.toISOString().slice(0, 10)).toBe(
+      expected.toISOString().slice(0, 10),
+    );
+  });
 });
 
 describe("prediction actions", () => {
